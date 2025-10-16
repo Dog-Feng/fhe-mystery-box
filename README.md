@@ -252,6 +252,14 @@ For issues or questions:
 - Review contract code in `contracts/MysteryBoxNFT.sol`
 - Inspect transactions on Etherscan
 
+## 📚 Additional Documentation
+
+- [Multilingual Guide](./MULTILINGUAL_GUIDE.md) - Language switching implementation
+- [Deployment Security](./DEPLOYMENT_SECURITY.md) - Security best practices
+- [Security Checklist](./SECURITY_CHECKLIST.md) - Pre-deployment security checks
+- [Linux Deployment](./LINUX_DEPLOYMENT.md) - **Complete Linux server deployment guide**
+- [GitHub Setup](./GITHUB_SETUP.md) - Version control setup
+
 ---
 
 **Built with ❤️ using ZAMA FHE Technology**
