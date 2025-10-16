@@ -1,0 +1,20 @@
+{
+  "sepolia": {
+    "network": "sepolia",
+    "chainId": 11155111,
+    "contractAddress": "0xB9042cF80d7d7B8bb5D573B85c20eb650ba0632B",
+    "deployer": "0x6A2Ce6C0d5F172310A965eCfc47867EB5d5Cbf2D",
+    "deploymentTime": "2025-10-16T12:08:53.450Z",
+    "parameters": {
+      "name": "Mystery Box NFT",
+      "symbol": "MBX",
+      "boxPrice": "0.0001 ETH",
+      "maxSupply": 0
+    },
+    "explorerUrl": "https://sepolia.etherscan.io/address/0xB9042cF80d7d7B8bb5D573B85c20eb650ba0632B",
+    "rpcUrl": "https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+    "deploymentMethod": "MetaMask",
+    "securityNote": "Deployed using MetaMask - no private keys stored in configuration"
+  }
+}
+
