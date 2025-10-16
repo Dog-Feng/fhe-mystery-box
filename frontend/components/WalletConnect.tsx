@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { BrowserProvider } from "ethers";
 import { NETWORK_CONFIG } from "@/lib/contract";
 import { Translations } from "@/lib/i18n";
@@ -15,6 +15,36 @@ export default function WalletConnect({ onConnect, onDisconnect, t }: WalletConn
   const [address, setAddress] = useState<string>("");
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string>("");
+
+  const checkConnection = useCallback(async () => {
+    if (typeof window === "undefined" || !window.ethereum) return;
+
+    try {
+      const provider = new BrowserProvider(window.ethereum);
+      const accounts = await provider.listAccounts();
+      
+      if (accounts.length > 0) {
+        const address = accounts[0].address;
+        setAddress(address);
+        onConnect(provider, address);
+      }
+    } catch (err) {
+      console.error("检查连接失败:", err);
+    }
+  }, [onConnect]);
+
+  const handleAccountsChanged = useCallback((accounts: string[]) => {
+    if (accounts.length === 0) {
+      setAddress("");
+      onDisconnect();
+    } else {
+      setAddress(accounts[0]);
+      if (window.ethereum) {
+        const provider = new BrowserProvider(window.ethereum);
+        onConnect(provider, accounts[0]);
+      }
+    }
+  }, [onConnect, onDisconnect]);
 
   useEffect(() => {
     // 检查是否已连接
@@ -31,37 +61,7 @@ export default function WalletConnect({ onConnect, onDisconnect, t }: WalletConn
         window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
       }
     };
-  }, []);
-
-  const checkConnection = async () => {
-    if (typeof window === "undefined" || !window.ethereum) return;
-
-    try {
-      const provider = new BrowserProvider(window.ethereum);
-      const accounts = await provider.listAccounts();
-      
-      if (accounts.length > 0) {
-        const address = accounts[0].address;
-        setAddress(address);
-        onConnect(provider, address);
-      }
-    } catch (err) {
-      console.error("检查连接失败:", err);
-    }
-  };
-
-  const handleAccountsChanged = (accounts: string[]) => {
-    if (accounts.length === 0) {
-      setAddress("");
-      onDisconnect();
-    } else {
-      setAddress(accounts[0]);
-      if (window.ethereum) {
-        const provider = new BrowserProvider(window.ethereum);
-        onConnect(provider, accounts[0]);
-      }
-    }
-  };
+  }, [checkConnection, handleAccountsChanged]);
 
   const connectWallet = async () => {
     if (typeof window === "undefined" || !window.ethereum) {
@@ -89,8 +89,9 @@ export default function WalletConnect({ onConnect, onDisconnect, t }: WalletConn
             method: "wallet_switchEthereumChain",
             params: [{ chainId: `0x${NETWORK_CONFIG.chainId.toString(16)}` }],
           });
-        } catch (switchError: any) {
-          if (switchError.code === 4902) {
+        } catch (switchError) {
+          const error = switchError as { code?: number };
+          if (error.code === 4902) {
             setError(t.switchNetwork);
           } else {
             setError(t.switchNetwork);
@@ -103,9 +104,10 @@ export default function WalletConnect({ onConnect, onDisconnect, t }: WalletConn
       const address = accounts[0];
       setAddress(address);
       onConnect(provider, address);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Connection failed:", err);
-      setError(err.message || t.connectionFailed);
+      const error = err as { message?: string };
+      setError(error.message || t.connectionFailed);
     } finally {
       setIsConnecting(false);
     }
@@ -152,9 +154,15 @@ export default function WalletConnect({ onConnect, onDisconnect, t }: WalletConn
 }
 
 // 声明 window.ethereum 类型
+interface EthereumProvider {
+  request: (args: { method: string; params?: unknown[] }) => Promise<string[]>;
+  on: (event: string, handler: (...args: unknown[]) => void) => void;
+  removeListener: (event: string, handler: (...args: unknown[]) => void) => void;
+}
+
 declare global {
   interface Window {
-    ethereum?: any;
+    ethereum?: EthereumProvider;
   }
 }
 

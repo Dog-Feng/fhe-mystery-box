@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import { CONTRACT_ADDRESS, CONTRACT_ABI, RARITY_COLORS } from "@/lib/contract";
 import { Translations } from "@/lib/i18n";
@@ -29,13 +29,7 @@ export default function MyBoxes({ provider, address, refreshTrigger, t }: MyBoxe
   const [opening, setOpening] = useState<number | null>(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (provider && address) {
-      loadMyBoxes();
-    }
-  }, [provider, address, refreshTrigger]);
-
-  const loadMyBoxes = async () => {
+  const loadMyBoxes = useCallback(async () => {
     if (!provider || !address) return;
 
     setLoading(true);
@@ -72,7 +66,7 @@ export default function MyBoxes({ provider, address, refreshTrigger, t }: MyBoxe
               openedAt: boxData.isOpened ? Number(boxData.openedAt) : undefined,
             });
           }
-        } catch (err) {
+        } catch {
           continue;
         }
       }
@@ -84,7 +78,13 @@ export default function MyBoxes({ provider, address, refreshTrigger, t }: MyBoxe
     } finally {
       setLoading(false);
     }
-  };
+  }, [provider, address, t.loadFailed]);
+
+  useEffect(() => {
+    if (provider && address) {
+      loadMyBoxes();
+    }
+  }, [provider, address, refreshTrigger, loadMyBoxes]);
 
   const openBox = async (tokenId: number) => {
     if (!provider) return;
@@ -105,13 +105,14 @@ export default function MyBoxes({ provider, address, refreshTrigger, t }: MyBoxe
       console.log("Box opened!");
       
       await loadMyBoxes();
-    } catch (err: any) {
+    } catch (err) {
       console.error("Open failed:", err);
       
-      if (err.code === "ACTION_REJECTED") {
+      const error = err as { code?: string; message?: string };
+      if (error.code === "ACTION_REJECTED") {
         setError(t.transactionCancelled);
       } else {
-        setError(err.message || t.openFailed);
+        setError(error.message || t.openFailed);
       }
     } finally {
       setOpening(null);

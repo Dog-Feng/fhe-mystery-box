@@ -37,7 +37,7 @@ export default function Home() {
     setAddress("");
   };
 
-  const handleMintSuccess = (tokenId: number) => {
+  const handleMintSuccess = () => {
     setRefreshTrigger(prev => prev + 1);
   };
 

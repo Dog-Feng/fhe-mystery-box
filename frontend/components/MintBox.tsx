@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { BrowserProvider, Contract, parseEther, formatEther } from "ethers";
+import { useState, useEffect, useCallback } from "react";
+import { BrowserProvider, Contract, formatEther } from "ethers";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract";
 import { Translations } from "@/lib/i18n";
 
@@ -18,7 +18,7 @@ export default function MintBox({ provider, address, onMintSuccess, t }: MintBox
   const [boxPrice, setBoxPrice] = useState("...");
   const [totalSupply, setTotalSupply] = useState(0);
 
-  const loadContractInfo = async () => {
+  const loadContractInfo = useCallback(async () => {
     if (!provider) return;
 
     try {
@@ -31,13 +31,13 @@ export default function MintBox({ provider, address, onMintSuccess, t }: MintBox
     } catch (err) {
       console.error("Load contract info failed:", err);
     }
-  };
+  }, [provider]);
 
   useEffect(() => {
     if (provider) {
       loadContractInfo();
     }
-  }, [provider]);
+  }, [provider, loadContractInfo]);
 
   const mintBox = async () => {
     if (!provider || !address) {
@@ -62,15 +62,20 @@ export default function MintBox({ provider, address, onMintSuccess, t }: MintBox
       const receipt = await tx.wait();
       console.log("Transaction confirmed:", receipt);
 
+      interface ParsedLog {
+        name: string;
+        args: unknown[];
+      }
+
       const event = receipt.logs
-        .map((log: any) => {
+        .map((log) => {
           try {
-            return contract.interface.parseLog(log);
+            return contract.interface.parseLog(log) as ParsedLog | null;
           } catch {
             return null;
           }
         })
-        .find((e: any) => e && e.name === "BoxMinted");
+        .find((e): e is ParsedLog => e !== null && e.name === "BoxMinted");
 
       if (event) {
         const tokenId = Number(event.args[0]);
@@ -79,15 +84,16 @@ export default function MintBox({ provider, address, onMintSuccess, t }: MintBox
         
         await loadContractInfo();
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Mint failed:", err);
       
-      if (err.code === "ACTION_REJECTED") {
+      const error = err as { code?: string; message?: string };
+      if (error.code === "ACTION_REJECTED") {
         setError(t.transactionCancelled);
-      } else if (err.message.includes("insufficient funds")) {
+      } else if (error.message?.includes("insufficient funds")) {
         setError(t.insufficientBalance);
       } else {
-        setError(err.message || t.mintFailed);
+        setError(error.message || t.mintFailed);
       }
     } finally {
       setIsMinting(false);
