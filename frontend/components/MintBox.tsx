@@ -80,7 +80,7 @@ export default function MintBox({ provider, address, onMintSuccess, t }: MintBox
             return null;
           }
         })
-        .find((e): e is ParsedLog => e !== null && e.name === "BoxMinted");
+        .find((e: ParsedLog | null): e is ParsedLog => e !== null && e.name === "BoxMinted");
 
       if (event) {
         const tokenId = Number(event.args[0]);
