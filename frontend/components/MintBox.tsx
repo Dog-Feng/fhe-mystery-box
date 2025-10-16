@@ -67,8 +67,13 @@ export default function MintBox({ provider, address, onMintSuccess, t }: MintBox
         args: unknown[];
       }
 
+      interface LogDescription {
+        topics?: string[];
+        data?: string;
+      }
+
       const event = receipt.logs
-        .map((log) => {
+        .map((log: LogDescription) => {
           try {
             return contract.interface.parseLog(log) as ParsedLog | null;
           } catch {
