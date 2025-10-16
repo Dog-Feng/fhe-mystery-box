@@ -48,7 +48,8 @@ export const CONTRACT_ABI = [
 export const NETWORK_CONFIG = {
   chainId: 11155111, // Sepolia
   name: "Sepolia",
-  rpcUrl: "https://sepolia.infura.io/v3/0baf7b768440432a9ec455077c65384a",
+  // 使用公共 RPC - 无需 API 密钥
+  rpcUrl: "https://rpc.sepolia.org",
   explorerUrl: "https://sepolia.etherscan.io"
 };
 

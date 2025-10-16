@@ -1,7 +1,8 @@
 const { ethers } = require("ethers");
 
 const CONTRACT_ADDRESS = "0xB9042cF80d7d7B8bb5D573B85c20eb650ba0632B";
-const RPC_URL = "https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161";
+// 使用公共 RPC - 无需 API 密钥
+const RPC_URL = "https://rpc.sepolia.org";
 
 // 简化的 ABI - 只测试 boxPrice
 const CONTRACT_ABI = [

@@ -74,11 +74,11 @@ export default function MyBoxes({ provider, address, refreshTrigger, t }: MyBoxe
       setBoxes(userBoxes);
     } catch (err) {
       console.error("Load boxes failed:", err);
-      setError(t.loadFailed);
+      setError("Failed to load boxes");
     } finally {
       setLoading(false);
     }
-  }, [provider, address, t.loadFailed]);
+  }, [provider, address]);
 
   useEffect(() => {
     if (provider && address) {
