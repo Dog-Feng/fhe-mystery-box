@@ -68,8 +68,8 @@ export default function MintBox({ provider, address, onMintSuccess, t }: MintBox
       }
 
       interface LogDescription {
-        topics?: string[];
-        data?: string;
+        readonly topics: readonly string[];
+        data: string;
       }
 
       const event = receipt.logs
