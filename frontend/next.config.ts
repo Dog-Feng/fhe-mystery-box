@@ -1,23 +1,21 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Allow cross-origin requests in development mode
-  experimental: {
-    // Allow requests from any origin in development
-    // This is necessary when accessing the dev server from external IPs
-    allowedDevOrigins: [
-      "202.61.192.99",
-      // Add other IPs or domains as needed
-      // Example: "example.com", "192.168.1.100"
-    ],
+  // Production-ready configuration
+  
+  // Output file tracing root to handle monorepo structure
+  outputFileTracingRoot: undefined,
+
+  // Development indicators (only affects dev mode)
+  devIndicators: {
+    position: "bottom-right",
   },
 
-  // Configure to listen on all network interfaces
-  // This allows external access to the dev server
-  devIndicators: {
-    buildActivity: true,
-    buildActivityPosition: "bottom-right",
-  },
+  // Optimize production build
+  productionBrowserSourceMaps: false,
+  
+  // Disable powered by header for security
+  poweredByHeader: false,
 };
 
 export default nextConfig;
