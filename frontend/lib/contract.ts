@@ -48,10 +48,9 @@ export const CONTRACT_ABI = [
 export const NETWORK_CONFIG = {
   chainId: 11155111, // Sepolia
   name: "Sepolia",
-  // RPC URL 从环境变量读取，如果没有则使用默认值
-  // 支持多个备选 RPC
-  rpcUrl: process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL || 
-          "https://rpc.ankr.com/eth_sepolia", // Ankr 公共 RPC (备选 1)
+  // 使用 Infura RPC (更稳定)
+  // 如果需要更换 RPC，修改这里的 URL
+  rpcUrl: "https://sepolia.infura.io/v3/0baf7b768440432a9ec455077c65384a",
   explorerUrl: "https://sepolia.etherscan.io"
 };
 
