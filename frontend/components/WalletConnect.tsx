@@ -33,7 +33,8 @@ export default function WalletConnect({ onConnect, onDisconnect, t }: WalletConn
     }
   }, [onConnect]);
 
-  const handleAccountsChanged = useCallback((accounts: string[]) => {
+  const handleAccountsChanged = useCallback((...args: unknown[]) => {
+    const accounts = args[0] as string[];
     if (accounts.length === 0) {
       setAddress("");
       onDisconnect();
