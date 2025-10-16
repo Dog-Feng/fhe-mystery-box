@@ -1,8 +1,8 @@
 const { ethers } = require("ethers");
 
 const CONTRACT_ADDRESS = "0xB9042cF80d7d7B8bb5D573B85c20eb650ba0632B";
-// 使用公共 RPC - 无需 API 密钥
-const RPC_URL = "https://rpc.sepolia.org";
+// 使用 Ankr 公共 RPC - 无需 API 密钥，通常更稳定
+const RPC_URL = process.env.SEPOLIA_RPC_URL || "https://rpc.ankr.com/eth_sepolia";
 
 // 简化的 ABI - 只测试 boxPrice
 const CONTRACT_ABI = [
